@@ -1,61 +1,35 @@
-// src/components/GardenStage.jsx
-import { motion, AnimatePresence } from 'framer-motion';
-
 export default function GardenStage({ currentSteps, isWatering }) {
-  // Logic to determine tree size
-  const getTreeData = () => {
-    if (currentSteps < 2000) return { img: "🌱", label: "Seedling", size: "text-6xl" };
-    if (currentSteps < 5000) return { img: "🌿", label: "Sprout", size: "text-7xl" };
-    if (currentSteps < 15000) return { img: "🌳", label: "Young Tree", size: "text-8xl" };
-    if (currentSteps < 50000) return { img: "🌲", label: "Mature Oak", size: "text-[120px]" };
-    return { img: "🍄🌲🌿", label: "Ancient Forest", size: "text-[120px]" };
-  };
-
-  const stage = getTreeData();
-
+  const progressInLevel = (currentSteps % 10000) / 10000;
+  const treeScale = 0.6 + (progressInLevel * 0.9);
+  
   return (
-    <div className="relative h-80 w-full bg-gradient-to-b from-sky-300 to-emerald-400 flex flex-col items-center justify-center pt-10">
+    <div className="relative h-72 w-full bg-gradient-to-b from-sky-100 to-emerald-50 flex items-center justify-center overflow-hidden">
+      {/* Background Decor */}
+      <div className="absolute bottom-0 w-full h-16 bg-emerald-200/50" />
+      <div className="absolute bottom-4 flex gap-12 opacity-20 text-2xl">
+        <span>🌱</span><span>🌱</span><span>🌱</span><span>🌱</span>
+      </div>
       
-      {/* CLOUDS */}
-      <motion.div 
-        animate={{ x: [-20, 20, -20] }} 
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute top-10 left-10 text-white opacity-40 text-4xl"
+      {/* The Tree */}
+      <div 
+        className={`text-[120px] transition-all duration-1000 ease-out transform z-10 ${isWatering ? 'animate-bounce' : ''}`}
+        style={{ transform: `scale(${treeScale})` }}
       >
-        ☁️
-      </motion.div>
+        {progressInLevel < 0.2 ? '🌱' : progressInLevel < 0.6 ? '🌿' : '🌳'}
+      </div>
 
-      {/* WATERING EFFECT */}
-      <AnimatePresence>
-        {isWatering && (
-          <motion.div
-            initial={{ y: -50, opacity: 0 }}
-            animate={{ y: 20, opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute top-0 text-4xl z-20"
-          >
-            💧 💧 💧
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Water Drops */}
+      {isWatering && (
+        <div className="absolute inset-0 flex justify-center pointer-events-none">
+          <div className="text-4xl animate-[ping_1s_infinite] mt-10">💧</div>
+          <div className="text-4xl animate-[ping_1.2s_infinite] mt-20 ml-10">💧</div>
+          <div className="text-4xl animate-[ping_0.8s_infinite] mt-12 mr-10">💧</div>
+        </div>
+      )}
 
-      {/* THE TREE */}
-      <motion.div
-        key={stage.label}
-        initial={{ scale: 0.5, opacity: 0 }}
-        animate={{ scale: isWatering ? [1, 1.1, 1] : 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className={`${stage.size} z-10 drop-shadow-2xl cursor-default`}
-      >
-        {stage.img}
-      </motion.div>
-
-      {/* THE GROUND */}
-      <div className="absolute bottom-0 w-full h-16 bg-[#5d4037] border-t-8 border-[#8d6e63]" />
-      
-      {/* STAGE LABEL */}
-      <div className="absolute bottom-4 z-20 bg-white/30 backdrop-blur-md px-4 py-1 rounded-full text-[10px] font-black text-white uppercase tracking-tighter">
-        Stage: {stage.label}
+      {/* Progress Label */}
+      <div className="absolute bottom-4 right-4 bg-white/50 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-emerald-700">
+        GROWTH: {Math.round(progressInLevel * 100)}%
       </div>
     </div>
   );
