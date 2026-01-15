@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import GardenStage from './components/GardenStage'
-import XPBar from './components/XPBar'
+
 
 function App() {
   // --- CORE STATE ---
